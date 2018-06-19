@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import './style.css';
+
 const ConnectedUsers = (props) => {
   return (
     <nav className="col-sm-3 col-md-2 sidebar">
@@ -9,7 +11,7 @@ const ConnectedUsers = (props) => {
       </div>
       <ul className="nav nav-pills flex-column">
         {props.users.map(user => (
-          <li className="nav-item username">
+          <li key={`${user.id}`} className="nav-item username">
             <span className="nav-link">{user.name}</span>
           </li>
         ))}

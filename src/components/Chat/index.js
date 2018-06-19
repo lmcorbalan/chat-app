@@ -1,60 +1,79 @@
 import React, { Component } from 'react';
-import './chat.css';
+import PropTypes from 'prop-types';
+import './style.css';
 
 import ConnectedUsers from '../ConnectedUsers';
-import Messages from '../Messages';
+import MessagesList from '../MessagesList';
+import MessageInput from '../MessageInput';
 
+const date = new Date().getTime();
 const connectedUsers = [
   {
+    id: date+1,
     name: 'usuario 1'
   },
   {
+    id: date+2,
     name: 'usuario 2'
   },
   {
+    id: date+3,
     name: 'usuario 3'
   },
   {
+    id: date+4,
     name: 'usuario 4'
   },
   {
+    id: date+5,
     name: 'usuario 5'
   }
 ];
 
-const messages = [
-  {
-    user: 'usuario 1',
-    content: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit'
-  },
-  {
-    user: 'usuario 1',
-    content: 'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-  },
-  {
-    user: 'usuario 2',
-    content: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris'
-  },
-  {
-    user: 'usuario 3',
-    content: 'nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit'
-  },
-  {
-    user: 'usuario 1',
-    content: ' in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-  },
-]
+let messages = []
 
-const Chat = () => (
-  <div className="row">
-    <ConnectedUsers users={connectedUsers} />
-    <Messages messages={messages} />
-    <footer className="col-sm-9 offset-sm-3 col-md-10 offset-md-2 footer">
-      <div className="container">
-        <span className="text-muted">Place sticky footer content here.</span>
+class Chat extends Component {
+  state = {
+    messages: [],
+    currentMessage: '',
+    isSendDisabled: true
+  }
+
+  handleMessageChange = (event) => {
+    this.setState({
+      currentMessage: event.target.value,
+      isSendDisabled: !(event.target.value)
+    });
+  };
+
+  handleSendClick = (event) => {
+    const newMessage = {
+      id: new Date().getTime(),
+      user: this.props.userName,
+      content: this.state.currentMessage
+    };
+    const messages = [...this.state.messages, newMessage];
+    this.setState({ messages: messages, currentMessage: '' });
+  };
+
+  render() {
+    return (
+      <div className="row">
+        <ConnectedUsers users={connectedUsers} />
+        <MessagesList messages={this.state.messages} />
+        <MessageInput
+          currentMessage={this.state.currentMessage}
+          isSendDisabled={this.state.isSendDisabled}
+          handleMessageChange={this.handleMessageChange}
+          handleSendClick={this.handleSendClick}
+        />
       </div>
-    </footer>
-  </div>
-)
+    )
+  }
+}
+
+Chat.propTypes = {
+  userName: PropTypes.string.isRequired
+}
 
 export default Chat;

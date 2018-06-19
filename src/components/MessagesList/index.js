@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './style.css';
 
-const Messages = (props) => {
+const MessagesList = props => {
   return (
-    <main className="col-sm-9 offset-sm-3 col-md-10 offset-md-2">
+    <main className="col-sm-9 offset-sm-3 col-md-10 offset-md-2 messages-list">
       {props.messages.map(message => (
-        <div className="row message">
+        <div key={`${message.id}`} className="row message">
           <div className="col-sm-2 col-md-2 message-user">
             {message.user}
           </div>
@@ -20,8 +21,8 @@ const Messages = (props) => {
   )
 }
 
-Messages.propTypes = {
+MessagesList.propTypes = {
   messages: PropTypes.array.isRequired
 }
 
-export default Messages;
+export default MessagesList;
