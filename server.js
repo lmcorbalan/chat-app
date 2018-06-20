@@ -1,56 +1,22 @@
-var app = require('express')();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+const express = require('express');
+const path = require('path');
+const app = express();
+const server = require('http').Server(app);
 
-server.listen(3333);
+// FIXME - move to config
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-let connectedUsers = [];
-let lastTenMessages = [];
+const PORT = process.env.PORT || 3333;
+const env = process.env.NODE_ENV
 
-io.on('connection', function (socket) {
-  socket.on('user-login', function (userName) {
-    const id = new Date().getTime();
-    socket.userId = id;
-    const user = {
-      id: new Date().getTime(),
-      name: userName
-    };
+if (env !== 'development') {
+  app.use(express.static(path.join(__dirname, 'build')));
 
-    connectedUsers.push(user);
-
-    socket.emit('success-login', { user, connectedUsers, lastTenMessages });
-    socket.broadcast.emit('add-user', user);
+  app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
   });
-
-  socket.on('new-message', message => {
-      socket.broadcast.emit('new-message', message);
-      lastTenMessages = getLastTenMessages(message);
-  });
-
-  socket.on('disconnect', () => {
-      connectedUsers = removeUser(connectedUsers, socket.userId);
-      socket.broadcast.emit('remove-user', connectedUsers);
-  });
-});
-
-
-// FIXME - Move to its own module
-/* =========== UTILS ============== */
-const removeUser = (users, userId) => {
-  return users.reduce((acc, user) => {
-    if (user.id !== userId) {
-      acc.push(user);
-    }
-    return acc;
-  }, [])
-};
-
-const getLastTenMessages = message => {
-  let tempMessages = [...lastTenMessages, message];
-  if (tempMessages.length > 10) {
-    const overTen = tempMessages.length - 10;
-    tempMessages = tempMessages.slice(overTen);
-  }
-
-  return tempMessages;
 }
+
+server.listen(PORT);
+
+require('./socket')(server);

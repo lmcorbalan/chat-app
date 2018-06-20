@@ -10,12 +10,11 @@ class App extends Component {
     userName: '',
     isUserLogged: false,
     isGoDisabled: true,
-    socket: io('http://localhost:3333')
+    socket: io()
   };
 
   componentDidMount() {
     this.state.socket.on('success-login', ({ user, connectedUsers, lastTenMessages }) => {
-      console.log('on success-login', user, connectedUsers);
       this.setState({
         user: user,
         connectedUsers: connectedUsers,
