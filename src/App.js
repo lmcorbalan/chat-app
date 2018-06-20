@@ -1,36 +1,56 @@
 import React, { Component } from 'react';
 
+import io from 'socket.io-client';
+
 import Chat from './components/Chat';
 import Login from './components/Login';
 
 class App extends Component {
   state = {
-    user: '',
+    userName: '',
     isUserLogged: false,
-    isGoDisabled: true
+    isGoDisabled: true,
+    socket: io('http://localhost:3333')
   };
+
+  componentDidMount() {
+    this.state.socket.on('success-login', ({user, connectedUsers}) => {
+      console.log('on success-login', user, connectedUsers);
+      this.setState({
+        user: user,
+        connectedUsers: connectedUsers,
+        isUserLogged: true
+      });
+    });
+
+  }
 
   handleUserNameChange = event => {
     const userName = event.target.value;
     this.setState({
-      user: userName,
+      userName: userName,
       isGoDisabled: !(userName)
     });
   };
 
-  handleGoClick = () => {
-    this.setState({ isUserLogged: true });
+  handleGoClick = e => {
+    e.preventDefault();
+    this.state.socket.emit('user-login', this.state.userName);
   };
 
   render() {
     const content = this.state.isUserLogged ? (
-      <Chat userName={this.state.user} />
+      <Chat
+        user={this.state.user}
+        connectedUsers={this.state.connectedUsers}
+        socket={this.state.socket}
+      />
     ) : (
       <Login
         isGoDisabled={this.state.isGoDisabled}
         handleGoClick={this.handleGoClick}
         handleUserNameChange={this.handleUserNameChange}
-        userName={this.state.user}
+        userName={this.state.userName}
       />
     );
     return <div className="container-fluid">{content}</div>;
