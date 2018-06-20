@@ -6,53 +6,16 @@ import ConnectedUsers from '../ConnectedUsers';
 import MessagesList from '../MessagesList';
 import MessageInput from '../MessageInput';
 
-const date = new Date().getTime();
-// const connectedUsers = [
-//   {
-//     id: date+1,
-//     name: 'usuario 1'
-//   },
-//   {
-//     id: date+2,
-//     name: 'usuario 2'
-//   },
-//   {
-//     id: date+3,
-//     name: 'usuario 3'
-//   },
-//   {
-//     id: date+4,
-//     name: 'usuario 4'
-//   },
-//   {
-//     id: date+5,
-//     name: 'usuario 5'
-//   }
-// ];
-
 let messages = []
 
 class Chat extends Component {
   state = {
     mySelf: this.props.user,
     connectedUsers: this.props.connectedUsers,
-    messages: [],
+    messages: this.props.lastTenMessages.length ? this.props.lastTenMessages : [],
     currentMessage: '',
     isSendDisabled: true
-  }
-
-  componentDidMount() {
-    console.log(this.state)
-    const { socket } = this.props;
-    socket.on('add-user', user => {
-      const connectedUsers = [...this.state.connectedUsers, user];
-      this.setState({ connectedUsers })
-    });
-
-    socket.on('remove-user', connectedUsers => {
-      this.setState({ connectedUsers })
-    });
-  }
+  };
 
   handleMessageChange = (event) => {
     this.setState({
@@ -61,14 +24,33 @@ class Chat extends Component {
     });
   };
 
-  handleSendClick = (event) => {
+  handleSend = () => {
     const newMessage = {
       id: new Date().getTime(),
       user: this.props.user.name,
-      content: this.state.currentMessage
+      content: this.state.currentMessage.trim()
     };
     const messages = [...this.state.messages, newMessage];
+
+    this.props.socket.emit('new-message', newMessage);
     this.setState({ messages: messages, currentMessage: '' });
+  };
+
+  componentDidMount() {
+    const { socket } = this.props;
+    socket.on('add-user', user => {
+      const connectedUsers = [...this.state.connectedUsers, user];
+      this.setState({ connectedUsers })
+    });
+
+    socket.on('new-message', message => {
+      const messages = [...this.state.messages, message];
+      this.setState({ messages: messages });
+    });
+
+    socket.on('remove-user', connectedUsers => {
+      this.setState({ connectedUsers })
+    });
   };
 
   render() {
@@ -80,12 +62,11 @@ class Chat extends Component {
           currentMessage={this.state.currentMessage}
           isSendDisabled={this.state.isSendDisabled}
           handleMessageChange={this.handleMessageChange}
-          handleSendClick={this.handleSendClick}
+          handleSend={this.handleSend}
         />
       </div>
     )
-  }
+  };
 };
-
 
 export default Chat;

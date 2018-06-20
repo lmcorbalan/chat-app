@@ -14,11 +14,12 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.state.socket.on('success-login', ({user, connectedUsers}) => {
+    this.state.socket.on('success-login', ({ user, connectedUsers, lastTenMessages }) => {
       console.log('on success-login', user, connectedUsers);
       this.setState({
         user: user,
         connectedUsers: connectedUsers,
+        lastTenMessages: lastTenMessages,
         isUserLogged: true
       });
     });
@@ -33,9 +34,10 @@ class App extends Component {
     });
   };
 
-  handleGoClick = e => {
-    e.preventDefault();
-    this.state.socket.emit('user-login', this.state.userName);
+  handleGoClick = event => {
+    event.preventDefault();
+    const userName = this.state.userName.trim();
+    this.state.socket.emit('user-login', userName);
   };
 
   render() {
@@ -44,6 +46,7 @@ class App extends Component {
         user={this.state.user}
         connectedUsers={this.state.connectedUsers}
         socket={this.state.socket}
+        lastTenMessages={this.state.lastTenMessages}
       />
     ) : (
       <Login
