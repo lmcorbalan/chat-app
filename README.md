@@ -12,7 +12,7 @@
   $ yarn develop
 ```
 
-## Deploy to HerokuI
+## Deploy to Heroku
 
 Install the Heroku Command Line Interface (CLI), then run the following commands
 
