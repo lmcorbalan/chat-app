@@ -6,8 +6,6 @@ import ConnectedUsers from '../ConnectedUsers';
 import MessagesList from '../MessagesList';
 import MessageInput from '../MessageInput';
 
-let messages = []
-
 class Chat extends Component {
   state = {
     mySelf: this.props.user,
@@ -27,13 +25,17 @@ class Chat extends Component {
   handleSend = () => {
     const newMessage = {
       id: new Date().getTime(),
-      user: this.props.user.name,
+      user: this.state.mySelf.name,
       content: this.state.currentMessage.trim()
     };
     const messages = [...this.state.messages, newMessage];
 
     this.props.socket.emit('new-message', newMessage);
-    this.setState({ messages: messages, currentMessage: '' });
+    this.setState({
+      messages: messages,
+      currentMessage: '',
+      isSendDisabled: true
+    });
   };
 
   componentDidMount() {
@@ -68,5 +70,15 @@ class Chat extends Component {
     )
   };
 };
+
+Chat.propTypes = {
+  user: PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string
+  }).isRequired,
+  connectedUsers: PropTypes.array.isRequired,
+  socket: PropTypes.object.isRequired,
+  lastTenMessages: PropTypes.array.isRequired,
+}
 
 export default Chat;

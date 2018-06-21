@@ -1,9 +1,9 @@
 .login {
-  height: 100%;
+  height: 100vh;
   text-align: center!important;
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
-  -ms-flex-align: center;
+  flex-align: center;
   align-items: center;
   padding-top: 40px;
   padding-bottom: 40px;

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import io from 'socket.io-client';
 
 import Chat from './components/Chat';
@@ -22,7 +21,6 @@ class App extends Component {
         isUserLogged: true
       });
     });
-
   }
 
   handleUserNameChange = event => {
@@ -33,7 +31,7 @@ class App extends Component {
     });
   };
 
-  handleGoClick = event => {
+  handleLogin = event => {
     event.preventDefault();
     const userName = this.state.userName.trim();
     this.state.socket.emit('user-login', userName);
@@ -50,7 +48,7 @@ class App extends Component {
     ) : (
       <Login
         isGoDisabled={this.state.isGoDisabled}
-        handleGoClick={this.handleGoClick}
+        handleLogin={this.handleLogin}
         handleUserNameChange={this.handleUserNameChange}
         userName={this.state.userName}
       />
